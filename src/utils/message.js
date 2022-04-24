@@ -1,21 +1,19 @@
 
 export const Message = {
-    albumId: 'Album ID',
-    Id: 'ID',
-    photoTitle: 'Title',
-    textDivider: ':',
-
-    chat_placeholder_label : "What's on your mind?",
-    dummy_msg_1 : "You earned 5 points",
-    dummy_msg_2 : "Jon Snow live. Join Now",
-    no_chat : "No New Message",
-    no_notification : "No New Notification",
-    screen_category_title : "Pick at least 2 interests",
+    book_now: "Book Now",
+    search_place_holder: "Search Places",
+    select_inetrests :"Select Interests",
+    selected : "Selected",
+    confirm : "Confirm",
+    no_user : "No User",
 
     //screens
     screen_intro : "Intro",
-    screen_video_chat : "Video Chat",
-    screen_select_categories : "Select Category" 
+    screen_home : "Home",
+    screen_home_details: "HomeDetails",
+    screen_users : "Users",
+    screen_dummy_1 : "Dummy1",
+    screen_dummy_2 : "Dummy2",
 
 };
 

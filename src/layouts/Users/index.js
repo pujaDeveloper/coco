@@ -3,20 +3,23 @@ import { Safe, View, Text, Button, TextInput, Image, TouchableOpacity, Modal, St
 import { useSelector, useDispatch } from 'react-redux'
 import { newNotif, readNotif } from '../../redux/notificationSlice'
 import color from '../../utils/color';
-import Globals, { getcategories } from '../../utils/Globals';
+import Globals from '../../utils/Globals';
 import { getStoredData, setStoredData } from '../../utils/store';
 import LottieView from 'lottie-react-native';
 import { Message } from '../../utils/message';
 import database from '@react-native-firebase/database';
 import { firebase } from '@react-native-firebase/database';
+import firestore from '@react-native-firebase/firestore';
 import styles from './styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CheckBox from '@react-native-community/checkbox';
 import _ from 'lodash';
 import { Chip } from 'react-native-paper';
+import NoData from '../../components/NoData';
+import { screenHeight } from '../../utils/theme';
 const profile_img = require('../../assets/Images/profile.png')
 
-export class Intro extends Component {
+export class Users extends Component {
 
 
     constructor(props) {
@@ -27,7 +30,10 @@ export class Intro extends Component {
             isFilterModalVisible: false,
             count: 2,
             filteredUsers: [],
-            selectedInterests: []
+            selectedInterests: [],
+            currentPage: 0,
+            limit: 10,
+            isPageEnd: false
         }
     }
 
@@ -45,32 +51,22 @@ export class Intro extends Component {
             headerTitleAlign: 'center',
             headerTitle: () => (<TouchableOpacity onPress={async () => {
                 this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible })
-                // await setModalVisible(!modalVisible)
-                // readNotifications()
             }} style={styles.header}>
-                {/* <Image style={[styles.headerRightimg, {tintColor: notifList && notifList.length > 0 ? color.Green : color.LightGrey }]}
-                  source={notification_active_img} /> */}
                 <Text style={styles.headerText}>{this.getHeaderTitle()}</Text>
 
             </TouchableOpacity>),
-            // headerLeft: () => {
-            //     return <TouchableOpacity >
-            //         <Image style={styles.headerLeftImg}
-            //             source={profile_img} />
-            //     </TouchableOpacity>
-            // },
         });
     }
 
 
     interestRow = ({ index, item }) => (
-        <TouchableOpacity onPress={() => this.onSelectInterest(item, !this.state.selectedInterests.includes(item))} style={{ width: '100%', paddingHorizontal: 10, }} >
+        <TouchableOpacity onPress={() => this.onSelectInterest(item, !this.state.selectedInterests.includes(item))} style={styles.interestRowContainer} >
             <View style={styles.interestRow}>
                 <CheckBox
                     disabled={false}
                     value={this.state.selectedInterests.includes(item)}
                     style={styles.checkBox}
-                    onValueChange={(newValue) => this.onSelectInterest(item, newValue)}
+                // onValueChange={(newValue) => this.onSelectInterest(item, newValue)}
                 />
                 <Text style={styles.checkBoxText}>{item}</Text>
             </View>
@@ -83,35 +79,14 @@ export class Intro extends Component {
         let cInterests = _.intersectionWith(this.state.selectedInterests, item.interests);
         return (
             <TouchableOpacity onPress={() => {
-                // item['selectable'] = item.selectable ? false : true
-                // let t = this.state.categories
-                // t[index] = item
-                // this.setState({ categories: t })
-            }} style={[styles.userRow, { backgroundColor: item.selectable ? color.LightGreen : color.WHITE }]}>
-                {/* <Image style={styles.rowImg}
-                source={item.image} /> */}
-                <View style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    alignItems: "center"
-                }}>
-                    <Image source={require('../../assets/Images/avatars/me.png')} style={{ width: 40, height: 40, marginRight: 20 }}></Image>
+            }} style={[styles.userRowContainer, { backgroundColor: item.selectable ? color.LightGreen : color.WHITE }]}>
+                <View style={styles.userRow}>
+                    <Image source={require('../../assets/Images/avatars/me.png')} style={styles.userRowImg}></Image>
                     <Text style={styles.rowText}>{item.name}</Text>
                 </View>
-                <View style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    paddingLeft: 45
-                }}>
+                <View style={styles.userInetrestContainer}>
                     {
-                        cInterests.map(item => (<View style={{
-                            backgroundColor: "#fbe9e7",
-                            padding: 5,
-                            paddingHorizontal: 15,
-                            borderRadius: 15,
-                            marginRight: 5
-                        }}>
+                        cInterests.map(item => (<View style={styles.ineterestChip}>
                             <Text>{item}</Text>
                         </View>))
                     }
@@ -122,48 +97,47 @@ export class Intro extends Component {
     };
 
     render() {
-        let { users, filteredUsers, count, interests, isFilterModalVisible } = this.state
+        let { users, filteredUsers, count, interests, isFilterModalVisible, currentPage } = this.state
         return (
             <View style={styles.container}>
-                <View style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    paddingHorizontal: 10,
-                    flexWrap: "wrap"
-                }}>
+                <View style={styles.subConatiner}>
                     {this.state.selectedInterests.map(item => (
-                        <Chip closeIcon={"close-circle"} onClose={() => {
-                            this.onSelectInterest(item, false)
-                            this.onFilter()
-                        }} style={{
-                            marginRight: 5
+                        <Chip style={{
+                            margin: 5,
+                            maxHeight: 30
                         }}>{item}</Chip>
                     ))}
                 </View>
 
-                {users && <FlatList
+                {users ? <View style={{height: screenHeight - 150}}><FlatList
                     ref={ref => this.list = ref}
-                    data={filteredUsers}
+                    data={users}
                     renderItem={this.userRow}
                     keyExtractor={item => item.key}
-                />}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={() => {
+                        this.getUsers()
+                    }}
+                    ListFooterComponent={() => <Text style={{alignSelf: 'center', margin: 10}}>End of List</Text>}
+                /></View> :
+                    <View style={styles.noDataContainer}>
+                        <NoData label={Message.no_user} />
+                    </View>}
+
+                
                 <Modal
                     animationType="fade"
                     transparent={true}
                     visible={isFilterModalVisible}
                     style={{ backgroundColor: 'black' }}
                     onRequestClose={() => {
-                        // setModalVisible(!modalVisible);
                         this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible })
                     }}>
                     <SafeAreaView style={{ height: '100%', backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <View style={styles.modalSubView} onPressOut={() => {
-                            // setModalVisible(!modalVisible)   
                             this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible })
                         }}>
-                            <View style={styles.modalView}>                            
+                            <View style={styles.modalView}>
                                 {(interests && interests.length > 0) ? <FlatList
                                     ref={ref => this.interests = ref}
                                     style={{ width: '100%' }}
@@ -176,21 +150,23 @@ export class Intro extends Component {
                                     </View>
                                 )}
                                 <TouchableOpacity style={{
-                                    backgroundColor: "#f4511e",
+                                    backgroundColor: color.PRIMARY,
                                     padding: 5,
                                     paddingHorizontal: 20,
                                     borderRadius: 20,
                                     marginBottom: 10
-                                }} onPress={() => {
+                                }} onPress={async() => {
                                     this.setHeader()
-                                    this.onFilter()
-                                    this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible })
+                                    // this.onFilter()
+                                    await this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible, users: [], isPageEnd: false, currentPage: 0 })
+                                    this.getUsers()
+
                                 }}>
                                     <Text style={{
-                                        color: 'white',
+                                        color: color.WHITE,
                                         padding: 10,
                                         fontWeight: '600'
-                                    }}>Confirm</Text>
+                                    }}>{Message.confirm}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -202,61 +178,74 @@ export class Intro extends Component {
         );
     }
 
-    async getUsers() {
-        console.log("getUsers");
-        await new Promise((resolve, reject) => {
-            database().ref("/DB/Users").orderByChild("original")
-            .on('value', (snapshot) => {
+
+    async getUsers() {      
+        
+        let { currentPage, limit, selectedInterests = [], users, isPageEnd } = this.state;
+        let epochLimit = users.length ? users[users.length - 1].epoch: Date.now();
+        console.log("getting users", { currentPage, limit, selectedInterests, isPageEnd }, epochLimit);
+        
+        if (isPageEnd) {
+            return;
+        }
+        if (!_.isEmpty(selectedInterests)) {
+            firestore().collection('Users').where("interests", "array-contains-any", selectedInterests).orderBy('epoch', 'desc').startAfter(epochLimit).limit(limit).get().then(querySnapshot => {
+                console.log('Total users: ', querySnapshot.size);
+    
                 var returnArr = [];
-
-                console.log("snapshot", snapshot.val());
-                snapshot.forEach(function (childSnapshot) {
-                    console.log("childSnapshot");
-                    var item = childSnapshot.val();
-                    item.key = childSnapshot.key;
-                    let arr = []
-                    Object.keys(item.interests).map((key) => arr.push(item.interests[key]));
-                    item.interests = arr
-
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    var item = documentSnapshot.data();
+                    item.key = documentSnapshot.key;
                     returnArr.push(item);
                 });
-                console.log("dataArray", returnArr);
-                this.setState({ users: returnArr, filteredUsers: returnArr })
-                resolve()
-            }, (err) => {
-                console.log(err, "error")
-                reject()
-            })
-            // .on("error", err => {
-            //     console.log("erro in db", err);
-            //     reject();
-            // })
-        });
-        console.log("getUsers1");
+                if (querySnapshot.size == limit) {
+                    currentPage++;
+                } else {
+                    isPageEnd = true
+                }
+                this.setState({ users: [...users, ...returnArr], isPageEnd, currentPage })    
+            });
+        } else {
+            firestore().collection('Users').orderBy('epoch','desc').startAfter(epochLimit).limit(limit).get().then(querySnapshot => {
+                console.log('Total users: ', querySnapshot.size);
+    
+                var returnArr = [];
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    var item = documentSnapshot.data();
+                    item.key = documentSnapshot.key;
+                    returnArr.push(item);
+                });
+                if (querySnapshot.size == limit) {
+                    currentPage++;
+                } else {
+                    isPageEnd = true
+                }
+                this.setState({ users: [...users, ...returnArr], currentPage, isPageEnd })                
+            });
+        }
     }
 
     getInterests() {
-
-        database().ref("/DB/Interests").orderByChild("original").on('value', (snapshot) => {
+        firestore().collection('Interests').onSnapshot((QuerySnapshot) => {
+            // console.log('Got Users collection result.', QuerySnapshot);
             var returnArr = [];
-
-            snapshot.forEach(function (childSnapshot) {
-                console.log("childSnapshot", childSnapshot);
-                var item = childSnapshot.val();
-                // item.key = childSnapshot.key;
-                // item.selected = false;
-
+            QuerySnapshot.forEach(documentSnapshot => {
+                // console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                var item = documentSnapshot.data().name;
                 returnArr.push(item);
             });
-
-
             this.setState({ interests: returnArr })
+
+        }, (error) => {
+            console.error(error);
         });
+
     }
 
     onSelectInterest(item, newValue) {
-        console.log("newValue", newValue, item);
-        if (newValue) {
+        if (newValue && !this.state.selectedInterests.includes(item)) {
             let t = this.state.selectedInterests
             t.push(item)
             this.setState({ selectedInterests: t })
@@ -268,27 +257,17 @@ export class Intro extends Component {
             }
         }
 
-        // let newArr = this.state.interests.map(x => {
-        //     if (item.key == x.key) {
-        //         x['selected'] = newValue
-        //     }
-        //     return x
-        // });
-        // this.setState({ interests: newArr })
     }
     getHeaderTitle() {
-        return "Select Interests"
+        return this.state.selectedInterests.length > 0 ? this.state.selectedInterests.length + " " + Message.selected : Message.select_inetrests
     }
 
     onFilter() {
         if (this.state.selectedInterests.length <= 0) {
             this.setState({ filteredUsers: this.state.users })
         } else {
-            console.log("this.state.selectedInterests", this.state.selectedInterests);
             let fUsers = this.state.users.filter(x => {
-                console.log("onFilter x", x);
                 let obj = x.interests.filter(i => this.state.selectedInterests.includes(i));
-                console.log("obj", obj);
                 return obj && obj.length > 0
             });
             this.setState({ filteredUsers: fUsers })

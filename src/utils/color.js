@@ -2,8 +2,11 @@
 
 export default Color = {
     WHITE: "#FFFFFF",
+    OFFWHITE: "#EEEEEE",
     BLACK: "#000000",
     TRANSPARENT: "transparent",
+    PRIMARY: "#f4511e",
+    PRIMARYLIGHT: "#fbe9e7",
 
     /* Global Colors */
     Red: "#F65D5D",
@@ -23,6 +26,6 @@ export default Color = {
     GreenGrey: "#4C5555",
     WhiteBlueLight: "#F1F5F8",
     LightGreen : "#c8e6c9" ,
-    LightSkyBlue :"#e1f5fe"
+    LightSkyBlue :"#e1f5fe",
     
 };

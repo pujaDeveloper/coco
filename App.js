@@ -9,29 +9,17 @@ import { Home } from './src/layouts/Home';
 import { HomeDetails } from './src/layouts/HomeDetails';
 const profile_img = require('./src/assets/Images/profile.png')
 import database from '@react-native-firebase/database';
+import { Message } from './src/utils/message';
+import { Users } from './src/layouts/Users';
+import color from './src/utils/color';
 
+console.disableYellowBox = true
 
-
-function SettingsScreen(props) {
- const getData= () => {
-   console.log("Here");
-   database()
-   .ref('/DB/users/123')
-   .set({
-     name: 'test',
-     age: 31,
-   })
-   .then(() => console.log('Data set.'));
- }
+function DummyScreen(props) {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-      <TouchableOpacity onPress={() => {
-        getData()
-      }}>
-      <Text>Settings!</Text>
-      </TouchableOpacity>
+      <Text>Coming Soon</Text>
     </View>
   );
 }
@@ -44,27 +32,23 @@ function HomeStackScreen() {
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={Home} options={{
         headerTitleAlign: 'center',
-        headerShadowVisible:false,
+        headerShadowVisible: false,
         headerBackTitleVisible: false,
         headerTitle: () => (
-          <Text style={{ fontSize: 21, color: '#f4511e' }}>Tourx</Text>
+          <Text style={styles.appTitle}>Tourx</Text>
         ),
         headerLeft: () => {
           return <TouchableOpacity>
-            <MaterialCommunityIcons style={{
-              height: 28,
-              width: 28
-            }} name="menu" color={'grey'} size={28} />
+            <MaterialCommunityIcons style={styles.menuIcon} name="menu" color={'grey'} size={28} />
           </TouchableOpacity>
         },
         headerRight: () => {
           return <TouchableOpacity >
-            <Image style={styles.headerLeftImg}
+            <Image style={styles.headerRightimg}
               source={profile_img} />
           </TouchableOpacity>
         }
       }} />
-      {/* <HomeStack.Screen name="HomeDetails" component={HomeDetails} options={{ headerShown: false }} /> */}
     </HomeStack.Navigator>
   );
 }
@@ -74,18 +58,8 @@ const UserStack = createNativeStackNavigator();
 function UserStackScreen() {
   return (
     <UserStack.Navigator>
-      <UserStack.Screen name="User" component={Intro} 
-      // options={({ route }) => ({
-      //   headerLeft: () => {
-      //     return <TouchableOpacity style={{}}>
-      //       <Image style={styles.headerLeftImg}
-      //         source={profile_img} />
-      //     </TouchableOpacity>
-
-      //   }
-      // })}
+      <UserStack.Screen name={Message.screen_users} component={Users}
       />
-      {/* <UserStack.Screen name="Intro" component={Intro} /> */}
     </UserStack.Navigator>
   );
 }
@@ -97,56 +71,32 @@ function BototmTab() {
   return (
     <Tab.Navigator shifting={false}
       inactiveColor="grey"
-      barStyle={{
-        backgroundColor: 'white',
-        borderTopWidth: 0,
-        borderTopColor: "transparent",
-
-        elevation: 0,
-        shadowColor: '#5bc4ff',
-        shadowOpacity: 0,
-        shadowOffset: {
-          height: 0,
-        },
-        shadowRadius: 0,
-      }}>
+      barStyle={styles.tabBarNavigator}>
 
       <Tab.Screen name="HomeStack" component={HomeStackScreen}
         options={{
           tabBarLabel: false,
           tabBarIcon: ({ focused, tintcolor }) => (
-            <MaterialCommunityIcons style={{
-              height: 40,
-              width: 40
-            }} name="home-circle" color={focused ? '#f4511e' : 'grey'} size={40} />
+            <MaterialCommunityIcons style={styles.icon} name="home-circle" color={focused ? color.PRIMARY : 'grey'} size={40} />
           ),
         }}
       />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{
-        tabBarLabel: false,
-        tabBarIcon: ({ focused, tintcolor }) => (
-          <MaterialCommunityIcons style={{
-            height: 40,
-            width: 40
-          }} name="compass" color={focused ? '#f4511e' : 'grey'} size={40} />
-        ),
-      }} />
       <Tab.Screen name="UserStack" component={UserStackScreen} options={{
         tabBarLabel: false,
         tabBarIcon: ({ focused, tintcolor }) => (
-          <MaterialCommunityIcons style={{
-            height: 40,
-            width: 40
-          }} name="bookmark" color={focused ? '#f4511e' : 'grey'} size={40} />
+          <MaterialCommunityIcons style={styles.icon} name="compass" color={focused ? color.PRIMARY : 'grey'} size={40} />
         ),
       }} />
-      <Tab.Screen name="Settings2" component={SettingsScreen} options={{
+      <Tab.Screen name={Message.screen_dummy_1} component={DummyScreen} options={{
         tabBarLabel: false,
         tabBarIcon: ({ focused, tintcolor }) => (
-          <MaterialCommunityIcons style={{
-            height: 40,
-            width: 40
-          }} name="account-circle" color={focused ? '#f4511e' : 'grey'} size={40} />
+          <MaterialCommunityIcons style={styles.icon} name="bookmark" color={focused ? color.PRIMARY : 'grey'} size={40} />
+        ),
+      }} />
+      <Tab.Screen name={Message.screen_dummy_2} component={DummyScreen} options={{
+        tabBarLabel: false,
+        tabBarIcon: ({ focused, tintcolor }) => (
+          <MaterialCommunityIcons style={styles.icon} name="account-circle" color={focused ? color.PRIMARY : 'grey'} size={40} />
         ),
       }} />
     </Tab.Navigator>
@@ -158,8 +108,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Dashboard" component={BototmTab}  options={{ headerShown: false }} />
-        <Stack.Screen name="HomeDetails" component={HomeDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="Dashboard" component={BototmTab} options={{ headerShown: false }} />
+        <Stack.Screen name={Message.screen_home_details} component={HomeDetails} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -167,20 +117,40 @@ export default function App() {
 
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    alignItems: "flex-end",
+  tabBarNavigator: {
+    backgroundColor: 'white',
+    borderTopWidth: 0,
+    borderTopColor: "transparent",
+
+    elevation: 0,
+    shadowColor: '#5bc4ff',
+    shadowOpacity: 0,
+    shadowOffset: {
+      height: 0,
+    },
+    shadowRadius: 0,
+  },
+  menuIcon: {
+    height: 28,
+    width: 28
+  },
+  appTitle: {
+    fontSize: 21, color: color.PRIMARY
+  },
+  icon: {
+    height: 40,
+    width: 40
   },
   headerRight: {
     width: 28, height: 28, alignItems: 'center', justifyContent: 'center'
   },
   headerRightimg: {
-    width: 22, height: 22,
+    width: 30, height: 30, borderRadius: 15,
   },
-  headerLeft: {
-    width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: 'grey', alignItems: 'center', justifyContent: 'center'
-  },
+  // headerLeft: {
+  //   width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: 'grey', alignItems: 'center', justifyContent: 'center'
+  // },
   headerLeftImg: {
-    width: 22, height: 22, borderRadius: 11,
+    width: 30, height: 30, borderRadius: 15,
   }
 });

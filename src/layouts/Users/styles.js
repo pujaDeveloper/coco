@@ -13,8 +13,20 @@ let userList = {
   container: {
     flex: 1, paddingVertical: 35, backgroundColor: "white"
   },
+  subConatiner:{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    flexWrap: "wrap"
+  },
   headerLeftImg: {
     width: 22, height: 22, borderRadius: 11,
+  },
+  interestRowContainer:{
+    width: '100%', paddingHorizontal: 10,
+
   },
   interestRow:{
     display: 'flex', 
@@ -33,7 +45,7 @@ let userList = {
     flex: 1,
     alignItems: "center",
   },
-  userRow: { 
+  userRowContainer: { 
     justifyContent: 'center',
     alignItems: 'flex-start',
     flexDirection: "column", 
@@ -42,6 +54,27 @@ let userList = {
     backgroundColor: color.WHITE,
     padding: 10,
     paddingHorizontal: 10 
+  },
+  userRow:{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  userRowImg:{
+    width: 40, height: 40, marginRight: 20 
+  },
+  userInetrestContainer:{
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 45
+  },
+  ineterestChip:{
+    backgroundColor: color.PRIMARYLIGHT,
+    padding: 5,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    marginRight: 5
   },
   rowImg:{
     width: 50, height: 50 
@@ -108,6 +141,9 @@ let userList = {
   modalText: {
     marginBottom: 5,
     textAlign: "center"
+  },
+  noDataContainer: {
+    flex: 1, justifyContent: 'center'
   }
 }
 
