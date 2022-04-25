@@ -128,7 +128,9 @@ let homePageStyleList = {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: "space-around",
-            alignItems: "stretch"
+            alignItems: "stretch",
+            backgroundColor: "white",
+            opacity: 0.8,
           },
           v1: {
             self: {
@@ -146,7 +148,8 @@ let homePageStyleList = {
                 flex: 0.2,
                 backgroundColor: color.WHITE,
                 borderRadius: 10,
-                maxHeight: 28
+                maxHeight: 28,
+                minHeight: 28
               },
               t1: {
                 self: {
@@ -164,12 +167,14 @@ let homePageStyleList = {
               t1: {
                 self: {
                   fontSize: 20,
+                  color: color.BLACK,
                   fontWeight: "600"
                 }
               },
               t2: {
                 self: {
                   fontSize: 16,
+                  color: color.BLACK,
                   fontWeight: "600"
                 }
               },
@@ -188,7 +193,7 @@ let homePageStyleList = {
                 height: "70%",
                 width: undefined,
                 aspectRatio: 1,
-                tintColor: color.DarkGrey,
+                tintColor: color.BLACK,
                 flex: 0.2,
                 zIndex: 1
               }

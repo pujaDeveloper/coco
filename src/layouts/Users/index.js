@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import { Safe, View, Text, Button, TextInput, Image, TouchableOpacity, Modal, StyleSheet, Pressable, FlatList, StatusBar, } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux'
-import { newNotif, readNotif } from '../../redux/notificationSlice'
 import color from '../../utils/color';
-import Globals from '../../utils/Globals';
-import { getStoredData, setStoredData } from '../../utils/store';
-import LottieView from 'lottie-react-native';
 import { Message } from '../../utils/message';
 import database from '@react-native-firebase/database';
 import { firebase } from '@react-native-firebase/database';
@@ -63,10 +58,11 @@ export class Users extends Component {
         <TouchableOpacity onPress={() => this.onSelectInterest(item, !this.state.selectedInterests.includes(item))} style={styles.interestRowContainer} >
             <View style={styles.interestRow}>
                 <CheckBox
+                    tintColors={ {true : color.PRIMARY, false : color.BLACK} }
                     disabled={false}
                     value={this.state.selectedInterests.includes(item)}
                     style={styles.checkBox}
-                // onValueChange={(newValue) => this.onSelectInterest(item, newValue)}
+                onValueChange={(newValue) => this.onSelectInterest(item, newValue)}
                 />
                 <Text style={styles.checkBoxText}>{item}</Text>
             </View>
@@ -78,21 +74,21 @@ export class Users extends Component {
     userRow = ({ index, item }) => {
         let cInterests = _.intersectionWith(this.state.selectedInterests, item.interests);
         return (
-            <TouchableOpacity onPress={() => {
+            <View onPress={() => {
             }} style={[styles.userRowContainer, { backgroundColor: item.selectable ? color.LightGreen : color.WHITE }]}>
                 <View style={styles.userRow}>
                     <Image source={require('../../assets/Images/avatars/me.png')} style={styles.userRowImg}></Image>
                     <Text style={styles.rowText}>{item.name}</Text>
                 </View>
-                <View style={styles.userInetrestContainer}>
+                <View style={styles.userInterestContainer}>
                     {
-                        cInterests.map(item => (<View style={styles.ineterestChip}>
-                            <Text>{item}</Text>
+                        cInterests.map(item => (<View style={styles.interestChip}>
+                            <Text style={{color : color.BLACK}}>{item}</Text>
                         </View>))
                     }
 
                 </View>
-            </TouchableOpacity>
+            </View>
         )
     };
 
@@ -109,7 +105,7 @@ export class Users extends Component {
                     ))}
                 </View>
 
-                {users ? <View style={{height: screenHeight - 150}}><FlatList
+                {users ? <View style={{ height: screenHeight - 150 }}><FlatList
                     ref={ref => this.list = ref}
                     data={users}
                     renderItem={this.userRow}
@@ -118,13 +114,13 @@ export class Users extends Component {
                     onEndReached={() => {
                         this.getUsers()
                     }}
-                    ListFooterComponent={() => <Text style={{alignSelf: 'center', margin: 10}}>End of List</Text>}
+                    ListFooterComponent={() => <Text style={{ alignSelf: 'center', margin: 10 }}>End of List</Text>}
                 /></View> :
                     <View style={styles.noDataContainer}>
                         <NoData label={Message.no_user} />
                     </View>}
 
-                
+
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -155,7 +151,7 @@ export class Users extends Component {
                                     paddingHorizontal: 20,
                                     borderRadius: 20,
                                     marginBottom: 10
-                                }} onPress={async() => {
+                                }} onPress={async () => {
                                     this.setHeader()
                                     // this.onFilter()
                                     await this.setState({ isFilterModalVisible: !this.state.isFilterModalVisible, users: [], isPageEnd: false, currentPage: 0 })
@@ -179,19 +175,19 @@ export class Users extends Component {
     }
 
 
-    async getUsers() {      
-        
+    async getUsers() {
+
         let { currentPage, limit, selectedInterests = [], users, isPageEnd } = this.state;
-        let epochLimit = users.length ? users[users.length - 1].epoch: Date.now();
+        let epochLimit = users.length ? users[users.length - 1].epoch : Date.now();
         console.log("getting users", { currentPage, limit, selectedInterests, isPageEnd }, epochLimit);
-        
+
         if (isPageEnd) {
             return;
         }
         if (!_.isEmpty(selectedInterests)) {
             firestore().collection('Users').where("interests", "array-contains-any", selectedInterests).orderBy('epoch', 'desc').startAfter(epochLimit).limit(limit).get().then(querySnapshot => {
                 console.log('Total users: ', querySnapshot.size);
-    
+
                 var returnArr = [];
                 querySnapshot.forEach(documentSnapshot => {
                     console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
@@ -204,12 +200,12 @@ export class Users extends Component {
                 } else {
                     isPageEnd = true
                 }
-                this.setState({ users: [...users, ...returnArr], isPageEnd, currentPage })    
+                this.setState({ users: [...users, ...returnArr], isPageEnd, currentPage })
             });
         } else {
-            firestore().collection('Users').orderBy('epoch','desc').startAfter(epochLimit).limit(limit).get().then(querySnapshot => {
+            firestore().collection('Users').orderBy('epoch', 'desc').startAfter(epochLimit).limit(limit).get().then(querySnapshot => {
                 console.log('Total users: ', querySnapshot.size);
-    
+
                 var returnArr = [];
                 querySnapshot.forEach(documentSnapshot => {
                     console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
@@ -222,7 +218,7 @@ export class Users extends Component {
                 } else {
                     isPageEnd = true
                 }
-                this.setState({ users: [...users, ...returnArr], currentPage, isPageEnd })                
+                this.setState({ users: [...users, ...returnArr], currentPage, isPageEnd })
             });
         }
     }

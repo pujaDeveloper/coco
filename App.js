@@ -7,7 +7,6 @@ import { Intro } from './src/layouts/Intro';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from './src/layouts/Home';
 import { HomeDetails } from './src/layouts/HomeDetails';
-const profile_img = require('./src/assets/Images/profile.png')
 import database from '@react-native-firebase/database';
 import { Message } from './src/utils/message';
 import { Users } from './src/layouts/Users';
@@ -39,13 +38,13 @@ function HomeStackScreen() {
         ),
         headerLeft: () => {
           return <TouchableOpacity>
-            <MaterialCommunityIcons style={styles.menuIcon} name="menu" color={'grey'} size={28} />
+            <MaterialCommunityIcons style={styles.menuIcon} name="menu" color={'grey'} size={40} />
           </TouchableOpacity>
         },
         headerRight: () => {
           return <TouchableOpacity >
             <Image style={styles.headerRightimg}
-              source={profile_img} />
+              source={require('./src/assets/Images/avatars/me.png')} />
           </TouchableOpacity>
         }
       }} />
@@ -131,11 +130,11 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
   },
   menuIcon: {
-    height: 28,
-    width: 28
+    height: 40,
+    width: 40
   },
   appTitle: {
-    fontSize: 21, color: color.PRIMARY
+    fontSize: 26, color: color.PRIMARY
   },
   icon: {
     height: 40,
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
     width: 28, height: 28, alignItems: 'center', justifyContent: 'center'
   },
   headerRightimg: {
-    width: 30, height: 30, borderRadius: 15,
+    width: 40, height: 40, borderRadius: 20
   },
   // headerLeft: {
   //   width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: 'grey', alignItems: 'center', justifyContent: 'center'

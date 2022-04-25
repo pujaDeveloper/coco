@@ -39,7 +39,7 @@ let userList = {
     fontSize: 14, color: color.BLACK, textAlignVertical: 'center', fontWeight: 'bold', marginLeft : 8
   },
   checkBox:{
-    width: 22, height : 22, 
+    width: 22, height : 22, color: color.BLACK
   },
   modalSubView: {
     flex: 1,
@@ -64,17 +64,18 @@ let userList = {
   userRowImg:{
     width: 40, height: 40, marginRight: 20 
   },
-  userInetrestContainer:{
+  userInterestContainer:{
     display: "flex",
     flexDirection: "row",
     paddingLeft: 45
   },
-  ineterestChip:{
+  interestChip:{
     backgroundColor: color.PRIMARYLIGHT,
     padding: 5,
     paddingHorizontal: 15,
     borderRadius: 15,
-    marginRight: 5
+    marginRight: 5,
+    color: color.BLACK
   },
   rowImg:{
     width: 50, height: 50 
@@ -93,7 +94,7 @@ let userList = {
     width : '70%', alignItems: 'center'
   },
   headerText:{
-    fontSize: 16
+    fontSize: 16, color: color.BLACK
   },
   headerRightimg:{
     width: 22, height: 22, 

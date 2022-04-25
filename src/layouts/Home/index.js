@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, TextInput, TouchableHighlight, Image, Dimensions, TouchableOpacity } from 'react-native';
-import { BlurView } from '@react-native-community/blur'
+// import { BlurView } from '@react-native-community/blur'
 import Carousel from 'react-native-snap-carousel';
 import styles from './styles';
 import { Message } from '../../utils/message';
@@ -37,14 +37,14 @@ export function Home(props) {
     return (
       <View style={[STYLE.item.self, {}]}>
         <Image source={item.image} style={[STYLE.item.bgImage.self, {}]}></Image>
-        <TouchableOpacity onPress={() => props.navigation.navigate("HomeDetails")}       
+        <TouchableOpacity activeOpacity={1} onPress={() => props.navigation.navigate("HomeDetails")}       
           style={[STYLE.item.details.self, {}]}>
-          <BlurView 
-            blurRadius={10}
+          <View 
+            // blurRadius={10}
             // reducedTransparencyFallbackColor={'white'}
-            blurType={"xlight"}
+            // blurType={"xlight"}
             // ReduceTransparency={true}
-            overlayColor={'rgb(255, 255, 255)'}
+            // overlayColor={'rgb(255, 255, 255)'}
             style={[STYLE.item.details.bView.self, {}]}>
             <View style={[STYLE.item.details.bView.v1.self, {}]}>
               <View style={[STYLE.item.details.bView.v1.v1.self, {}]}>
@@ -58,7 +58,7 @@ export function Home(props) {
             <View  style={[STYLE.item.details.bView.v2.self, {}]} on>
               <Image style={[STYLE.item.details.bView.v2.image.self, {}]} source={require('../../assets/Images/cart.png')}></Image>
             </View>
-          </BlurView>
+          </View>
         </TouchableOpacity>
     </View>
     );
@@ -67,7 +67,7 @@ export function Home(props) {
   console.log(STYLE.v1.self);
   return (
     <View style={[STYLE.self, {}]}>
-      <Text style={[STYLE.t1.self, {}]}>Discover{"\n"}A New World </Text>
+      <Text style={[STYLE.t1.self, {color: color.BLACK}]}>Discover{"\n"}A New World </Text>
       <View style={[STYLE.v1.self, {}]}>
         <View style={[STYLE.v1.v1.self, {}]}>
           <Image style={[STYLE.v1.v1.image.self, {}]} source={require('../../assets/Images/search.png')}></Image>
